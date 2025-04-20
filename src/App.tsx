@@ -67,9 +67,9 @@ const App = () => {
         />
 
         {/* Priority Section */}
-        <div className="relative">
+        <div className="relative cursor-pointer">
           <select
-            className="border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-gray-900 appearance-none w-full"
+            className="border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-gray-900 appearance-none w-full cursor-pointer"
             value={priority}
             onChange={(e) =>
               setPriority(e.target.value as "High" | "Medium" | "Low")
@@ -97,12 +97,38 @@ const App = () => {
         </div>
 
         {/* Date Section */}
-        <input
-          type="date"
-          className="border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-300 transition text-gray-900 placeholder-gray-500"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-        />
+        <div className="relative w-full">
+          <input
+            type="date"
+            onFocus={(e) => e.target.showPicker && e.target.showPicker()}
+            className={`appearance-none w-full border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-300 transition placeholder-gray-500 cursor-pointer
+              [&::-webkit-calendar-picker-indicator]:opacity-0
+              [&::-webkit-calendar-picker-indicator]:cursor-pointer
+              ${
+                dueDate === ""
+                  ? "[&::-webkit-datetime-edit]:text-gray-500"
+                  : "text-gray-900"
+              }
+            `}
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+          />
+          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+            <svg
+              className="w-4 h-4 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+        </div>
 
         {/* Add Buttion Section */}
         <button
