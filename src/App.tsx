@@ -21,7 +21,7 @@ const App = () => {
       id: crypto.randomUUID(),
       description,
       priority,
-      dueDate: dueDate ? new Date(dueDate) : undefined,
+      dueDate: new Date(dueDate + "T00:00:00"),
       status: "Not Started",
     };
     setTodos([...todos, newTodo]);
@@ -32,6 +32,13 @@ const App = () => {
 
   const handleDeleteTodo = (id: string) => {
     setTodos(todos.filter((todo) => todo.id !== id));
+  };
+
+  const handleSaveTodo = (updated: TodoItem) => {
+    setTodos((prev) =>
+      prev.map((todo) => (todo.id === updated.id ? updated : todo))
+    );
+    setEditingTodo(null);
   };
 
   // * COMPUTED *
@@ -202,10 +209,10 @@ const App = () => {
                 <p
                   className={`text-sm font-medium ${
                     todo.priority === "High"
-                      ? "text-red-500"
+                      ? "text-red-700"
                       : todo.priority === "Medium"
-                      ? "text-yellow-500"
-                      : "text-gray-500"
+                      ? "text-yellow-700"
+                      : "text-gray-400"
                   }`}
                 >
                   Priority: {todo.priority}
@@ -224,8 +231,8 @@ const App = () => {
                     todo.status === "Not Started"
                       ? "text-gray-400"
                       : todo.status === "In Progress"
-                      ? "text-blue-400"
-                      : "text-green-400"
+                      ? "text-blue-700"
+                      : "text-green-700"
                   }`}
                 >
                   Status: {todo.status}
@@ -238,15 +245,158 @@ const App = () => {
 
       {/* Edit Todo Modal */}
       {editingTodo && (
-        <div className="fixed inset-0 z-50 bg-opacity-20 backdrop-blur-sm flex items-center justify-center">
-          <div className="bg-white rounded-xl p-6 shadow-lg max-w-sm w-full text-center">
-            <h2 className="text-xl font-semibold mb-4">Edit Todo</h2>
-            <p className="text-gray-700">Modal</p>
+        <div className="fixed inset-0 z-50 bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
+          <div className="relative bg-white rounded-xl p-6 shadow-lg max-w-[350px] w-full gap-3 flex flex-col">
             <button
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition cursor-pointer"
               onClick={() => setEditingTodo(null)}
+              aria-label="Close"
             >
-              Close
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            <h2 className="text-xl font-semibold mb-4 text-center">
+              Edit ToDo
+            </h2>
+
+            {/* Description */}
+            <input
+              className="border w-full border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-300 transition text-gray-900 placeholder-gray-500"
+              placeholder="What do you need to do?"
+              value={editingTodo.description}
+              onChange={(e) =>
+                setEditingTodo({ ...editingTodo, description: e.target.value })
+              }
+            />
+
+            {/* Priority */}
+            <div className="relative cursor-pointer">
+              <select
+                className="border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-gray-900 appearance-none w-full cursor-pointer"
+                value={editingTodo.priority}
+                onChange={(e) =>
+                  setEditingTodo({
+                    ...editingTodo,
+                    priority: e.target.value as TodoItem["priority"],
+                  })
+                }
+              >
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Due Date */}
+            <div className="relative w-full">
+              <input
+                type="date"
+                onFocus={(e) => e.target.showPicker && e.target.showPicker()}
+                className={`appearance-none w-full border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-300 transition placeholder-gray-500 cursor-pointer
+        [&::-webkit-calendar-picker-indicator]:opacity-0
+        [&::-webkit-calendar-picker-indicator]:cursor-pointer
+        ${
+          editingTodo.dueDate
+            ? "text-gray-900"
+            : "[&::-webkit-datetime-edit]:text-gray-500"
+        }
+      `}
+                value={
+                  editingTodo.dueDate
+                    ? editingTodo.dueDate.toISOString().split("T")[0]
+                    : ""
+                }
+                onChange={(e) =>
+                  setEditingTodo({
+                    ...editingTodo,
+                    dueDate: new Date(e.target.value + "T00:00:00"),
+                  })
+                }
+              />
+              <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="relative cursor-pointer">
+              <select
+                className="border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-gray-900 appearance-none w-full cursor-pointer"
+                value={editingTodo.status}
+                onChange={(e) =>
+                  setEditingTodo({
+                    ...editingTodo,
+                    status: e.target.value as TodoItem["status"],
+                  })
+                }
+              >
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <button
+              className="w-full bg-blue-500 text-white py-3 rounded-xl hover:bg-blue-600 font-semibold cursor-pointer mt-3"
+              onClick={() => handleSaveTodo(editingTodo)}
+            >
+              Save
             </button>
           </div>
         </div>
