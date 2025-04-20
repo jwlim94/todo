@@ -3,15 +3,10 @@ import { TodoItem } from "./types/TodoItem";
 import { loadTodos, saveTodos } from "./utils/storage";
 
 const App = () => {
-  const [todos, setTodos] = useState<TodoItem[]>([]);
+  const [todos, setTodos] = useState<TodoItem[]>(() => loadTodos());
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<"High" | "Medium" | "Low">("Medium");
   const [dueDate, setDueDate] = useState("");
-
-  useEffect(() => {
-    const storedTodos = loadTodos();
-    setTodos(storedTodos);
-  }, []);
 
   useEffect(() => {
     saveTodos(todos);
