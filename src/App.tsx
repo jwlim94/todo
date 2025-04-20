@@ -9,6 +9,9 @@ const App = () => {
   const [priority, setPriority] = useState<"High" | "Medium" | "Low">("Medium");
   const [dueDate, setDueDate] = useState("");
   const [editingTodo, setEditingTodo] = useState<TodoItem | null>(null);
+  const [statusFilter, setStatusFilter] = useState<
+    "All" | "Not Started" | "In Progress" | "Completed"
+  >("All");
 
   // * EFFECTS *
   useEffect(() => {
@@ -43,6 +46,10 @@ const App = () => {
 
   // * COMPUTED *
   const isFormValid = description.trim() !== "" && dueDate !== "";
+
+  const filteredTodos = todos.filter((todo) =>
+    statusFilter === "All" ? true : todo.status === statusFilter
+  );
 
   // * DOM *
   return (
@@ -139,10 +146,45 @@ const App = () => {
         </button>
       </div>
 
+      {/* Filter by status */}
+      {todos.length > 0 && (
+        <div className="flex justify-end mt-4">
+          <div className="relative w-32 cursor-pointer">
+            <select
+              className="border border-gray-300 px-3 py-2 pr-10 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-300 transition text-sm text-gray-900 appearance-none w-full cursor-pointer"
+              value={statusFilter}
+              onChange={(e) =>
+                setStatusFilter(e.target.value as typeof statusFilter)
+              }
+            >
+              <option value="All">All</option>
+              <option value="Not Started">Not Started</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Show ToDo List */}
       {todos.length > 0 && (
         <ul className="flex flex-col gap-4 mt-4">
-          {todos.map((todo) => (
+          {filteredTodos.map((todo) => (
             <li
               key={todo.id}
               className={`relative border p-4 rounded-2xl shadow-sm transition bg-gray-50 ${
