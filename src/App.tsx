@@ -85,6 +85,7 @@ const App = () => {
             <option value="Work">Work</option>
             <option value="Shopping">Shopping</option>
             <option value="Study">Study</option>
+            <option value="Other">Other</option>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
             <svg
@@ -379,6 +380,7 @@ const App = () => {
                 <option value="Work">Work</option>
                 <option value="Shopping">Shopping</option>
                 <option value="Study">Study</option>
+                <option value="Other">Other</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
                 <svg
