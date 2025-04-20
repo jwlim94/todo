@@ -8,6 +8,7 @@ const App = () => {
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<"High" | "Medium" | "Low">("Medium");
   const [dueDate, setDueDate] = useState("");
+  const [editingTodo, setEditingTodo] = useState<TodoItem | null>(null);
 
   // * EFFECTS *
   useEffect(() => {
@@ -141,6 +142,28 @@ const App = () => {
                 todo.status === "Completed" ? "opacity-60" : ""
               }`}
             >
+              {/* Edit Button */}
+              <button
+                className="absolute top-4 right-12 text-gray-400 hover:text-blue-500 transition cursor-pointer"
+                onClick={() => setEditingTodo(todo)}
+                aria-label="Edit"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
+                  />
+                </svg>
+              </button>
+
               {/* Delete Button */}
               <button
                 className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition cursor-pointer"
@@ -211,6 +234,22 @@ const App = () => {
             </li>
           ))}
         </ul>
+      )}
+
+      {/* Edit Todo Modal */}
+      {editingTodo && (
+        <div className="fixed inset-0 z-50 bg-opacity-20 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white rounded-xl p-6 shadow-lg max-w-sm w-full text-center">
+            <h2 className="text-xl font-semibold mb-4">Edit Todo</h2>
+            <p className="text-gray-700">Modal</p>
+            <button
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onClick={() => setEditingTodo(null)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
