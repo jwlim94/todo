@@ -48,6 +48,8 @@ const App = () => {
     );
   };
 
+  const isFormValid = description.trim() !== "" && dueDate !== "";
+
   return (
     <div className="w-full max-w-md min-w-[350px] mx-auto p-6 bg-white shadow-md rounded-2xl m-6">
       <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
@@ -104,8 +106,13 @@ const App = () => {
 
         {/* Add Buttion Section */}
         <button
-          className="bg-blue-500 text-white p-3 rounded-xl hover:bg-blue-600 transition font-semibold mt-3 cursor-pointer"
+          className={`p-3 rounded-xl font-semibold mt-3 cursor-pointer transition ${
+            isFormValid
+              ? "bg-blue-500 text-white hover:bg-blue-600"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
           onClick={handleAddTodo}
+          disabled={!isFormValid}
         >
           Add ToDo
         </button>
