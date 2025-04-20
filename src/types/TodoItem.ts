@@ -4,4 +4,5 @@ export interface TodoItem {
   priority: "High" | "Medium" | "Low";
   dueDate?: Date;
   status: "Not Started" | "In Progress" | "Completed";
+  category: "Personal" | "Work" | "Shopping" | "Study" | "Other";
 }

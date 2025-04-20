@@ -6,6 +6,9 @@ const App = () => {
   // * STATES *
   const [todos, setTodos] = useState<TodoItem[]>(() => loadTodos());
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState<
+    "Personal" | "Work" | "Shopping" | "Study" | "Other"
+  >("Personal");
   const [priority, setPriority] = useState<"High" | "Medium" | "Low">("Medium");
   const [dueDate, setDueDate] = useState("");
   const [editingTodo, setEditingTodo] = useState<TodoItem | null>(null);
@@ -23,6 +26,7 @@ const App = () => {
     const newTodo: TodoItem = {
       id: crypto.randomUUID(),
       description,
+      category,
       priority,
       dueDate: new Date(dueDate + "T00:00:00"),
       status: "Not Started",
@@ -68,18 +72,19 @@ const App = () => {
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        {/* Priority Section */}
+        {/* Category Section */}
         <div className="relative cursor-pointer">
           <select
             className="border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-gray-900 appearance-none w-full cursor-pointer"
-            value={priority}
+            value={category}
             onChange={(e) =>
-              setPriority(e.target.value as "High" | "Medium" | "Low")
+              setCategory(e.target.value as TodoItem["category"])
             }
           >
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
+            <option value="Personal">Personal</option>
+            <option value="Work">Work</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Study">Study</option>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
             <svg
@@ -127,6 +132,36 @@ const App = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        {/* Priority Section */}
+        <div className="relative cursor-pointer">
+          <select
+            className="border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-gray-900 appearance-none w-full cursor-pointer"
+            value={priority}
+            onChange={(e) =>
+              setPriority(e.target.value as "High" | "Medium" | "Low")
+            }
+          >
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
               />
             </svg>
           </div>
@@ -247,6 +282,17 @@ const App = () => {
                   {todo.description}
                 </p>
 
+                <p className="text-sm text-gray-500">
+                  Category: {todo.category}
+                </p>
+
+                {/* Date Section */}
+                {todo.dueDate && (
+                  <p className="text-sm text-gray-500">
+                    Due: {new Date(todo.dueDate).toLocaleDateString()}
+                  </p>
+                )}
+
                 {/* Priority Section */}
                 <p
                   className={`text-sm font-medium ${
@@ -259,13 +305,6 @@ const App = () => {
                 >
                   Priority: {todo.priority}
                 </p>
-
-                {/* Date Section */}
-                {todo.dueDate && (
-                  <p className="text-sm text-gray-500">
-                    Due: {new Date(todo.dueDate).toLocaleDateString()}
-                  </p>
-                )}
 
                 {/* Status Section */}
                 <p
@@ -314,7 +353,7 @@ const App = () => {
               Edit ToDo
             </h2>
 
-            {/* Description */}
+            {/* Description Section */}
             <input
               className="border w-full border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-300 transition text-gray-900 placeholder-gray-500"
               placeholder="What do you need to do?"
@@ -324,7 +363,84 @@ const App = () => {
               }
             />
 
-            {/* Priority */}
+            {/* Category Section */}
+            <div className="relative cursor-pointer">
+              <select
+                className="border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-gray-900 appearance-none w-full cursor-pointer"
+                value={editingTodo.category}
+                onChange={(e) =>
+                  setEditingTodo({
+                    ...editingTodo,
+                    category: e.target.value as TodoItem["category"],
+                  })
+                }
+              >
+                <option value="Personal">Personal</option>
+                <option value="Work">Work</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Study">Study</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Date Section */}
+            <div className="relative w-full">
+              <input
+                type="date"
+                onFocus={(e) => e.target.showPicker && e.target.showPicker()}
+                className={`appearance-none w-full border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-300 transition placeholder-gray-500 cursor-pointer
+                  [&::-webkit-calendar-picker-indicator]:opacity-0
+                  [&::-webkit-calendar-picker-indicator]:cursor-pointer
+                  ${
+                    editingTodo.dueDate
+                      ? "text-gray-900"
+                      : "[&::-webkit-datetime-edit]:text-gray-500"
+                  }
+                `}
+                value={
+                  editingTodo.dueDate
+                    ? editingTodo.dueDate.toISOString().split("T")[0]
+                    : ""
+                }
+                onChange={(e) =>
+                  setEditingTodo({
+                    ...editingTodo,
+                    dueDate: new Date(e.target.value + "T00:00:00"),
+                  })
+                }
+              />
+              <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Priority Section */}
             <div className="relative cursor-pointer">
               <select
                 className="border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-gray-900 appearance-none w-full cursor-pointer"
@@ -357,50 +473,7 @@ const App = () => {
               </div>
             </div>
 
-            {/* Due Date */}
-            <div className="relative w-full">
-              <input
-                type="date"
-                onFocus={(e) => e.target.showPicker && e.target.showPicker()}
-                className={`appearance-none w-full border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-300 transition placeholder-gray-500 cursor-pointer
-        [&::-webkit-calendar-picker-indicator]:opacity-0
-        [&::-webkit-calendar-picker-indicator]:cursor-pointer
-        ${
-          editingTodo.dueDate
-            ? "text-gray-900"
-            : "[&::-webkit-datetime-edit]:text-gray-500"
-        }
-      `}
-                value={
-                  editingTodo.dueDate
-                    ? editingTodo.dueDate.toISOString().split("T")[0]
-                    : ""
-                }
-                onChange={(e) =>
-                  setEditingTodo({
-                    ...editingTodo,
-                    dueDate: new Date(e.target.value + "T00:00:00"),
-                  })
-                }
-              />
-              <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            {/* Status */}
+            {/* Status Section */}
             <div className="relative cursor-pointer">
               <select
                 className="border border-gray-300 p-3 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-gray-900 appearance-none w-full cursor-pointer"
